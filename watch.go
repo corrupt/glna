@@ -1,5 +1,5 @@
 /*  Original Code Copyright (c) 2013, Nathan Youngman
- *  All rights reserved.
+*  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
  *  1. Redistributions of source code must retain the above copyright notice, this
@@ -63,7 +63,7 @@ func (watcher *RecursiveWatcher) AddFolder(folder string) {
 	watcher.Folders <- folder
 }
 
-func (watcher *RecursiveWatcher) Run(debug bool) {
+func (watcher *RecursiveWatcher) Run(debug bool)  {
 	go func() {
 		for {
 			select {

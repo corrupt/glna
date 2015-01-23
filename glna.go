@@ -3,36 +3,37 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 )
 
-
 func main() {
-	//LogInit(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 	fmt.Println("Hello World")
 	var path = "/home/svars/test"
 
-	//filesystem.WatchDirectory(path)
-	//filesystem.FSWatchDirectory(path)
-	//filesystem.WatchDirectoryRecursive(path)
 	rw, err := NewRecursiveWatcher(path)
 	if err != nil {
 		log.Fatal("Could not create recursive watcher")
 	}
+
 	Scan(path)
 	rw.Run(true)
 	defer rw.Close()
 
+	dq := NewDirectoryQueue()
+	dq.Run()
+
+	pups := make(chan int)
 	for {
 		select {
-			case folder :=<-rw.Folders:
-				log.Println("watching " + folder)
-				channel := GetEventChannel(folder)
-				channel <- 
-				Scan(folder)
-			case file :=<-rw.Files:
-				log.Println("watching " + file)
+		case folder := <-rw.Folders:
+			log.Println("watching " + folder)
+			dq.events <- folder
+		case file := <-rw.Files:
+			log.Println("watching " + file)
+			dq.events <- filepath.Dir(file)
+		case dir := <-dq.scan:
+			Scan(dir)
 		}
 	}
-
-
+	<-pups
 }
